@@ -80,6 +80,7 @@ export default function PostsPage() {
   const submitCreateModal = (post: Post) => {
     createPost({
       variables: { createPost: post },
+      refetchQueries: [QUERY_POSTS, 'posts'],
       optimisticResponse: {
         __typename: 'Mutation',
         createPost: {
@@ -96,7 +97,7 @@ export default function PostsPage() {
         });
       },
     });
-    // closeCreateModal();
+    closeCreateModal();
   };
 
   const [editForm] = Form.useForm();

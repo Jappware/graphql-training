@@ -6,6 +6,7 @@ export const UPDATE_POST = gql`
       id
       title
       body
+      __typename
     }
   }
 `;

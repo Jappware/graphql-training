@@ -82,7 +82,7 @@
 
     <div class="flex mt-2">
       <p-button label="Cancel" class="ml-auto" styleClass="p-button-secondary" (onClick)="hideCreateModal()"></p-button>
-      <p-button label="Add Post" icon="pi pi-save" class="ml-4" (onClick)="createPost()"></p-button>
+      <p-button label="Add Post" icon="pi pi-save" class="ml-4" [loading]="loading" (onClick)="createPost()"></p-button>
     </div>
   </form>
 </p-dialog>
@@ -129,7 +129,13 @@
 
     <div class="flex mt-2">
       <p-button label="Cancel" class="ml-auto" styleClass="p-button-secondary" (onClick)="hideEditModal()"></p-button>
-      <p-button label="Update Post" icon="pi pi-save" class="ml-4" (onClick)="updatePost()"></p-button>
+      <p-button
+        label="Update Post"
+        icon="pi pi-save"
+        class="ml-4"
+        [loading]="loading"
+        (onClick)="updatePost()"
+      ></p-button>
     </div>
   </form>
 </p-dialog>

@@ -40,9 +40,9 @@ export default function AddCommentForm({ postId }: Props) {
   }, [form]);
 
   const [createComment] = useMutation(CREATE_COMMENT, {
-    //refetchQueries: ['post', 'postsComments'],
+    refetchQueries: ['post', 'postsComments'],
     onCompleted: () => {
-      clearForm();
+      // clearForm();
     },
   });
   const submitComment = (comment: Comment) => {
@@ -81,7 +81,7 @@ export default function AddCommentForm({ postId }: Props) {
         });
       },
     });
-    // clearForm();
+    clearForm();
   };
 
   return (

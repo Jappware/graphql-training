@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { finalize, Observable, Subject, takeUntil } from 'rxjs';
 import { FormValidationMessages, getFormErrors, trimValue } from 'src/app/@shared/utils';
 import { Post } from 'src/app/posts/models';
 import { PostsService } from 'src/app/posts/posts.service';
@@ -16,6 +16,7 @@ export class PostsComponent implements OnInit, OnDestroy {
   editPost!: Post | null;
   isShownCreateModal = false;
   isShownEditModal = false;
+  loading = false;
 
   createForm = new UntypedFormGroup({
     title: new UntypedFormControl(null, Validators.required),
@@ -41,10 +42,7 @@ export class PostsComponent implements OnInit, OnDestroy {
   };
   private unsubscribe$ = new Subject<void>();
 
-  constructor(
-    private router: Router,
-    private postsService: PostsService,
-  ) {}
+  constructor(private router: Router, private postsService: PostsService) {}
 
   ngOnInit(): void {
     this.createForm.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(this.handleCreateFormErrors.bind(this));
@@ -67,7 +65,14 @@ export class PostsComponent implements OnInit, OnDestroy {
     }
 
     const post = trimValue(this.createForm.value);
-    this.postsService.createPost(post).subscribe(this.hideCreateModal.bind(this));
+    this.startLoading();
+    this.postsService
+      .createPost(post)
+      .pipe(finalize(this.endLoading.bind(this)))
+      .subscribe(() => {
+        // this.hideCreateModal();
+      });
+    this.hideCreateModal();
   }
 
   updatePost(): void {
@@ -78,7 +83,14 @@ export class PostsComponent implements OnInit, OnDestroy {
 
     const { id } = this.editPost || {};
     const post = trimValue(this.updateForm.value);
-    this.postsService.updatePost(+id!, post).subscribe(this.hideEditModal.bind(this));
+    this.startLoading();
+    this.postsService
+      .updatePost(+id!, post)
+      .pipe(finalize(this.endLoading.bind(this)))
+      .subscribe(() => {
+        // this.hideEditModal();
+      });
+    this.hideEditModal();
   }
 
   deletePost({ id }: Post): void {
@@ -117,5 +129,13 @@ export class PostsComponent implements OnInit, OnDestroy {
 
   private handleUpdateFormErrors(): void {
     this.updateFormErrors = getFormErrors(this.updateForm, this.updateFormErrors, this.validationMessages) as any;
+  }
+
+  private startLoading(): void {
+    this.loading = true;
+  }
+
+  private endLoading(): void {
+    this.loading = false;
   }
 }
